@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>카트플러그</title>
+    <link rel="stylesheet" href="index.css" />
+    <script defer src="renderer.js"></script>
+  </head>
+  <body>
+    <!-- System Bar -->
+     <div class="titleBar">
+        <div class="titLeft">
+          <img src="titleBar/icon.svg" />
+        </div>
+        <div class="appLogo">
+          <img src="titleBar/kartplug.svg" />
+        </div>
+        <div class="titRight">
+            <img src="titleBar/minimize.svg" id="minimizeBtn" />
+            <img src="titleBar/close.svg" id="closeBtn" />
+        </div>
+     </div>
+
+     <!-- Game content -->
+      <div class="gameContent">
+        <div class="gameLeft">
+          <img src="brand/logo.png" class="gameLogo"/>
+          <div class="gameVersion" id="version">버전 검사 중입니다.</div>
+          <button class="gameStart" id="start">불러오는 중</button>
+        </div>
+        <div class="gameRight">
+          <div class="appLog" id="logger">
+          </div>
+          <div class="convForm">
+              <input type="text" id="convInput" class="convInput" placeholder="/help로 명령어 확인"/>
+              <button id="convBtn" class="convBtn">전송</button>
+          </div>
+        </div>
+      </div>
+      <div class="patchContent" id="patchContent">
+      </div>
+  </body>
+</html>

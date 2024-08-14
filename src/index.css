@@ -1,0 +1,125 @@
+@font-face {
+  font-family:  'Noto Sans KR';
+  src: url('font/NotoSansKR-Regular.ttf') format('opentype');
+}
+@font-face {
+  font-family:  'Nexon Lv1 Gothic OTF';
+  src: url('font/NEXONLv1GothicBold.ttf') format('opentype');
+}
+body{
+  margin: 0;
+  background-image: url('brand/defaultbg.png');
+  background-size: cover;
+  font-family: 'Noto Sans KR', sans-serif!important;
+}
+::-webkit-scrollbar {
+  display: none;
+}
+.titleBar{
+  display: flex;
+  justify-content: space-between;
+  color: #C0C1C2;
+  background-color: #01111F;
+  padding: 5px 20px;
+  -webkit-app-region: drag;
+}
+.appLogo img, .titLeft img{
+  margin-top: 2px;
+  height: 16px;
+}
+.titRight{
+  display: flex;
+  align-items: center;
+  column-gap: 12px;
+  -webkit-app-region: no-drag;
+}
+.titRight img{
+  width: 12px;
+  height: 12px;
+  cursor: pointer;
+}
+.titRight img:hover{
+  filter: invert(1);
+}
+
+.gameContent{
+  height: 300px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 45px;
+  padding-right: 45px;
+}
+.patchContent{
+  margin-top: 7px;
+  height: 140px;
+  display: flex;
+  column-gap: 20px;
+  overflow-x: scroll;
+  padding-left: 40px;
+}
+.patchContent img{
+  height: 140px;
+  cursor: pointer;
+}
+.gameVersion{
+  color: #C0C1C2;
+  margin-top: 15px;
+  font-size: 16px;
+}
+.gameStart{
+  margin-top: 21px;
+  border-radius: 999px;
+  width: 200px;
+  height: 50px;
+  background-color: #fff;
+  font-family: 'Nexon Lv1 Gothic OTF', sans-serif;
+  font-weight: 700;
+  border: none;
+  font-size: 16px;
+  transition: 0.2s;
+}
+.gameStart:hover{
+  background-color: #0F77FF;
+  color: #fff;
+  cursor: pointer;
+}
+
+.appLog{
+  width: 360px;
+  height: 200px;
+  color: #fff;
+  font-size: 12px;
+  overflow-y: auto;
+}
+
+.convForm{
+  margin-top: 17px;
+  width: 360px;
+  height: 40px;
+  border-radius: 15px;
+  background-color: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  border: #646464 1px solid;
+}
+
+.convForm input{
+  height: 100%;
+  background-color: transparent;
+  border: transparent;
+  width: 280px;
+  padding-left: 15px;
+  color: #C4C7C5;
+}
+.convForm input:focus{
+  outline: none;
+}
+
+.convForm button{
+  background-color: #3C4442;
+  color: #fff;
+  padding: 5px 10px;
+  border: transparent;
+  border-radius: 999px;
+  cursor: pointer;
+}
