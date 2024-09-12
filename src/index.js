@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('node:path');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -9,8 +9,8 @@ if (require('electron-squirrel-startup')) {
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 500,
+    width: 1080,
+    height: 700,
     title: '카트플러그',
     icon: path.join(__dirname, 'icon.png'),
     frame: false,
@@ -44,6 +44,17 @@ const createWindow = () => {
       message,
     });
   });
+
+  ipcMain.handle('dialog:openDirectory', async () => {
+    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+      properties: ['openDirectory']
+    })
+    if (canceled) {
+      return
+    } else {
+      return filePaths[0]
+    }
+  })
 };
 
 // This method will be called when Electron has finished

@@ -30,6 +30,7 @@
   "license": "MIT",
   "dependencies": {
     "electron-json-storage": "^4.6.0",
+    "electron-overlay-window": "^3.3.0",
     "electron-squirrel-startup": "^1.0.1"
   }
 }

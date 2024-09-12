@@ -10,10 +10,8 @@
     <!-- System Bar -->
      <div class="titleBar">
         <div class="titLeft">
-          <img src="titleBar/icon.svg" />
         </div>
         <div class="appLogo">
-          <img src="titleBar/kartplug.svg" />
         </div>
         <div class="titRight">
             <img src="titleBar/minimize.svg" id="minimizeBtn" />
@@ -21,23 +19,57 @@
         </div>
      </div>
 
+     <div class="dimmer" id="loading" style="background-color: #191a1c; flex-direction: column;">
+      <div class="loading"></div>
+      <div class="loadingText">카트플러그 실행 중...</div>
+      <footer class="footer">© H2O Studio All Rights Reserved.​</footer>
+    </div>
+
+      <div class="dimmer" id="notice">
+        <div class="notiWrap">
+            <div class="notiHeader">
+              <span id="noticeTitle">공지사항</span>
+              <img src="titleBar/close.svg" id="closeNotice" />
+            </div>
+            <div class="notiCon" id="noticeContent"> 
+            </div>
+        </div>
+      </div>
+
      <!-- Game content -->
-      <div class="gameContent">
-        <div class="gameLeft">
-          <img src="brand/logo.png" class="gameLogo"/>
+      <div class="game">
+        <div class="plugHeader">
+            <img src="titleBar/kartplug.svg" class="plugLogo"/>
+            <div class="plugIcons">
+              <img src="img/youtube.svg" class="plugIcon" id="youtube"/>
+              <img src="img/discord.svg" class="plugIcon" id="discord"/>
+              <!--<img src="img/question.svg" class="plugIcon" id="question"/>-->
+            </div>
+        </div>
+        <div class="gameContent">
+          <div class="gameLeft">
+            <div class="appLog" id="logger">
+            </div>
+            <div class="convForm">
+                <input type="text" id="convInput" class="convInput" placeholder="Enter키를 눌러 변환할 수 있어요."/>
+                <button id="convBtn" class="convBtn">전송</button>
+            </div>
+          </div>
+        </div>
+        <div class="gameBottom">
+          <div>
+          <h3 class="gameTitle">크레이지레이싱 카트라이더
+            <img src="img/all.png" alt="전체이용가" class="gameRating"/>
+          </h3>
           <div class="gameVersion" id="version">버전 검사 중입니다.</div>
-          <button class="gameStart" id="start">불러오는 중</button>
         </div>
-        <div class="gameRight">
-          <div class="appLog" id="logger">
-          </div>
-          <div class="convForm">
-              <input type="text" id="convInput" class="convInput" placeholder="/help로 명령어 확인"/>
-              <button id="convBtn" class="convBtn">전송</button>
+          <div class="gameControl">
+              <button class="gameStart" id="start">불러오는 중</button>
+              <img src="setting.svg" id="setting" alt="설정">
           </div>
         </div>
-      </div>
-      <div class="patchContent" id="patchContent">
-      </div>
+    </div>
+    <div class="patchContent" id="patchContent">
+    </div>
   </body>
 </html>

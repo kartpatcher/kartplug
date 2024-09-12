@@ -1,6 +1,10 @@
 @font-face {
   font-family:  'Noto Sans KR';
-  src: url('font/NotoSansKR-Regular.ttf') format('opentype');
+  src: url('font/PretendardVariable.ttf') format('opentype');
+}
+@font-face{
+  font-family: 'Spoqa Han Sans Neo';
+  src: url('font/SpoqaHanSansNeo-Regular.otf') format('opentype');
 }
 @font-face {
   font-family:  'Nexon Lv1 Gothic OTF';
@@ -8,20 +12,73 @@
 }
 body{
   margin: 0;
-  background-image: url('brand/defaultbg.png');
-  background-size: cover;
   font-family: 'Noto Sans KR', sans-serif!important;
+  background-color: #05324B;
+}
+:not(input):not(textarea),
+:not(input):not(textarea)::after,
+:not(input):not(textarea)::before {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none;
+    -webkit-app-region: no-drag;
+}
+input, button, textarea, .appLog, :focus {
+    outline: none;
 }
 ::-webkit-scrollbar {
   display: none;
 }
+
+@keyframes loadingAni {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading {
+  width: 38px;
+  height: 38px;
+  background: url(img/ico_loading.png) no-repeat 0 0;
+  animation: loadingAni 1.5s steps(12) infinite;
+}
+.loadingText{
+  padding: 18px 0 0 0;
+  font-size: 18px;
+  line-height: 1;
+  color: white;
+  font-family: 'Spoqa Han Sans Neo';
+}
+.footer{
+  font-family: 'Spoqa Han Sans Neo';
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 55px;
+  font-size: 13px;
+  line-height: 0.85;
+  color: rgba(255, 255, 255, 0.3);
+  background-color: #262626;
+}
 .titleBar{
+  z-index: 1000;
   display: flex;
   justify-content: space-between;
   color: #C0C1C2;
-  background-color: #01111F;
-  padding: 5px 20px;
+  background-color: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(10px);
+  padding: 10px 20px;
   -webkit-app-region: drag;
+  position: fixed;
+  width: 100%;
+  box-sizing: border-box;
 }
 .appLogo img, .titLeft img{
   margin-top: 2px;
@@ -37,22 +94,49 @@ body{
   width: 12px;
   height: 12px;
   cursor: pointer;
+  transition: 0.2s;
 }
 .titRight img:hover{
-  filter: invert(1);
+  filter: brightness(1.2);
 }
 
+.game{
+  padding-top: 32px;
+  background-image: url('brand/defaultbg.png');
+  background-size: cover;
+}
+.plugHeader{
+  display: flex;
+  justify-content: space-between;
+  color: #fff;
+  padding: 12px 30px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0) 100%);
+}
+.plugIcons{
+  display: flex;
+  gap: 15px;
+}
+.plugIcons img{
+  filter: invert(1);
+  transition: 0.2s;
+  cursor: pointer;
+}
+.plugIcons img:hover{
+  filter: invert(0.8);
+}
+.plugHeader img{
+  height: 16px;
+}
 .gameContent{
-  height: 300px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding-left: 45px;
   padding-right: 45px;
+  margin-top: 30px;
 }
 .patchContent{
-  margin-top: 7px;
-  height: 140px;
+  margin-top: 25px;
   display: flex;
   column-gap: 20px;
   overflow-x: scroll;
@@ -61,45 +145,90 @@ body{
 .patchContent img{
   height: 140px;
   cursor: pointer;
+  border-radius: 10px;
+  transition: 0.2s;
+}
+.patchContent img:hover{
+  filter: brightness(1.2);
 }
 .gameVersion{
   color: #C0C1C2;
-  margin-top: 15px;
+  margin-top: 10px;
   font-size: 16px;
 }
 .gameStart{
-  margin-top: 21px;
-  border-radius: 999px;
+  background-color:#2497FF;
+  background-size: 0% 100%;
+  border-radius: 10px;
   width: 200px;
   height: 50px;
-  background-color: #fff;
-  font-family: 'Nexon Lv1 Gothic OTF', sans-serif;
-  font-weight: 700;
+  font-family: 'Noto Sans KR';
+  font-weight: 600;
   border: none;
   font-size: 16px;
-  transition: 0.2s;
+  transition: background-color .2s;
+  color: #fff;
 }
+.gameStart:hover {
+  background-color:#2497FF;
+  background-image:linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,.5) 100%);
+  background-repeat:no-repeat;
+  background-size: 200% 100%; 
+  transition:background-size 1s, background-color 1s;
+}
+		
 .gameStart:hover{
   background-color: #0F77FF;
   color: #fff;
   cursor: pointer;
 }
 
-.appLog{
-  width: 360px;
-  height: 200px;
+.gameBottom{
+  display: flex;
+  justify-content: space-between;
+  margin-top: 25px;
+  padding: 0px 45px;
   color: #fff;
   font-size: 12px;
+}
+.gameControl{
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.gameTitle{
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.gameRating{
+  height: 32px;
+}
+
+.appLog{
+  width: 360px;
+  height: 250px;
+  color: #fff;
+  font-family: 'Spoqa Han Sans Neo';
+  font-size: 12px;
   overflow-y: auto;
+  -webkit-user-select: text!important;
+  user-select: text!important;
 }
 
 .convForm{
   margin-top: 17px;
-  width: 360px;
-  height: 40px;
-  border-radius: 15px;
+  width: 350px;
+  height: 36px;
+  border-radius: 999px;
   background-color: rgba(0, 0, 0, 0.75);
   color: #fff;
+  font-family: 'Noto Sans KR';
   border: #646464 1px solid;
 }
 
@@ -107,8 +236,9 @@ body{
   height: 100%;
   background-color: transparent;
   border: transparent;
-  width: 280px;
+  width: 275px;
   padding-left: 15px;
+  font-family: 'Noto Sans KR';
   color: #C4C7C5;
 }
 .convForm input:focus{
@@ -118,8 +248,136 @@ body{
 .convForm button{
   background-color: #3C4442;
   color: #fff;
-  padding: 5px 10px;
+  padding: 2px 10px;
   border: transparent;
   border-radius: 999px;
+  font-family: 'Noto Sans KR';
   cursor: pointer;
+}
+
+.dimmer{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+.batteryWrap{
+  background-image: url('batteryCharge/bg.png');
+  background-size: cover;
+  width: 600px;
+  height: 450px;
+  color: #fff;
+  display: flex;
+}
+.batteryWrap .left{
+  display: flex;
+  flex-direction: column;
+  margin-left: 65px;
+  margin-top: 280px;
+  align-items: center;
+  text-align: center;
+  width: 160px;
+}
+.chargeSelect{
+  width: 50px;
+  background-color: transparent;
+  border: transparent;
+  color: #fff;
+  font-family: 'Noto Sans KR';
+  text-align: center;
+}
+.chargeCombo{
+  color: #fff;
+  font-size: 14px;
+  display: flex;
+}
+.batteryWrap .left .price{
+  font-size: 24px;
+  font-weight: 600;
+}
+.batteryWrap .left .desc{
+  margin-top: 5px;
+  font-size: 8px;
+}
+.batteryWrap .right{
+  margin-left: 25px;
+  margin-top: 190px;
+  width: 300px;
+}
+
+.notiCon{
+  overflow-y: scroll;
+  width: 760px;
+  height: 480px;
+  color: #fff;
+  padding: 5px 30px 0px 30px;
+  box-sizing: border-box;
+  font-family: 'Spoqa Han Sans Neo';
+}
+.notiWrap{
+  overflow-y: scroll;
+  width: 760px;
+  height: 540px;
+  border-radius: 10px;
+  color: #fff;
+  backdrop-filter: blur(5px);
+  background-color: #262626de;
+  border: 1px solid #343434;
+}
+.notiHeader{
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background-color: #2c2c2c;
+  color: #fff;
+  align-items: center;
+}
+#closeNotice{
+  cursor: pointer;
+  height: 16px;
+  transition: 0.2s;
+}
+#closeNotice:hover{
+  filter: brightness(1.2);
+}
+.setupCategory{
+  font-weight: 700;
+  margin: 0;
+  padding: 0;
+}
+.setupDesc{
+  font-size: 11px;
+  margin: 0;
+  padding: 0;
+}
+.setupDiv{
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
+.notiCon button{
+  background-color: #0F77FF;
+  color: #fff;
+  border: transparent;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+#saveBtn{
+  margin-top: 20px;
+}
+#setting{
+  width: 50px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+#setting:hover{
+  filter: invert(0.1);
 }
