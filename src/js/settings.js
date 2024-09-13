@@ -1,8 +1,22 @@
-
 const settingsBtn = document.getElementById('setting');
 const settingFile = fs.readFileSync(path.join(__dirname, 'setting.html'), 'utf8');
 const configPath = path.join(process.cwd(), 'config.json');
 
+if (!fs.existsSync(configPath)) {
+    fs.writeFileSync(configPath, JSON.stringify({
+        tcPath: "C:\\Program Files (x86)\\TCGAME",
+        kartPath: "C:\\Program Files (x86)\\TCGAME\\TCGameApps\\kart"
+    }));
+}
+else {
+    const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    if (config.kartPath){
+        kartPath = config.kartPath;
+    }
+    if (config.tcPath){
+        tcPath = config.tcPath;
+    }
+}
 settingsBtn.addEventListener('click', () => {
     noticeContent.innerHTML = settingFile;
     noticeTitle.innerText = '설정 ('+appVersion+')';

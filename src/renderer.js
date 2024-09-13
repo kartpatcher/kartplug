@@ -44,7 +44,7 @@ let tcPath = "C:\\Program Files (x86)\\TCGAME";
 let kartPath = "C:\\Program Files (x86)\\TCGAME\\TCGameApps\\kart";
 let sourceURI = "https://kartpatcher.github.io";
 let githubURI = "https://api.github.com/repos/kartpatcher/kartpatcher.github.io/releases";
-let appVersion = "1.1.0";
+let appVersion = "1.1.1.1";
 
 function sendNotification(title, body) {
     ipcRenderer.send('push-notification', title, body);
@@ -291,6 +291,7 @@ async function kartInit(releases) {
     } catch (error) {
         loading.style.display = 'none';
         log(`[오류] ${error.message}`);
+        sendNotification('카트플러그', '설치 경로가 올바르게 설정되어 있지 않습니다.');
         log('[정보] 설치 상태는 <strong>Ctrl+R</strong>키로 카트플러그를 재시작하여 확인할 수 있습니다.');
         try {
             fs.accessSync(path.join(tcPath, 'TCGame.exe'));
