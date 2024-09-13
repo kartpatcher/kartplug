@@ -13,7 +13,6 @@
 body{
   margin: 0;
   font-family: 'Noto Sans KR', sans-serif!important;
-  background-color: #05324B;
 }
 :not(input):not(textarea),
 :not(input):not(textarea)::after,
@@ -102,8 +101,6 @@ input, button, textarea, .appLog, :focus {
 
 .game{
   padding-top: 32px;
-  background-image: url('brand/defaultbg.png');
-  background-size: cover;
 }
 .plugHeader{
   display: flex;
@@ -348,27 +345,67 @@ input, button, textarea, .appLog, :focus {
 }
 .setupCategory{
   font-weight: 700;
-  margin: 0;
+  font-size: 14px;
+  margin: 20px 0 15px 0;
   padding: 0;
 }
 .setupDesc{
   font-size: 11px;
-  margin: 0;
-  padding: 0;
+  color: #A3A4A5;
+  padding: 0px 0 15px 0;
+  display: block;
 }
 .setupDiv{
-  margin-top: 15px;
+  margin-top: 20px;
   margin-bottom: 10px;
 }
-
+.checkboxDiv{
+  display: flex;
+  align-items: center;
+}
+.checkDesc{
+  font-size: 12px;
+  color: #A3A4A5;
+  width: 320px;
+}
+input[type='checkbox']{
+   display: none;
+}
+input[type='checkbox']+label{ 
+    width: 50px;
+    height: 24px;
+    background-repeat: no-repeat; /* 반복 방지 */
+    background-image: url('img/off.svg'); /*off 이미지*/
+}
+input[type='checkbox']:checked+label{
+    background-repeat: no-repeat; /* 반복 방지 */
+    background-image: url('img/on.svg'); /*on 이미지*/
+}
 .notiCon button{
-  background-color: #0F77FF;
-  color: #fff;
-  border: transparent;
-  padding: 5px 10px;
+  background-color: #313235;
+  color: #A9A9AB;
+  border: 1px solid #555659;
+  border-radius: 5px;
   cursor: pointer;
+  padding: 0 10px;
+  height: 30px;
   font-size: 12px;
   font-weight: 700;
+  transition: 0.3s;
+}
+.notiCon input:disabled{
+  width: 320px;
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid #3F4042;
+  border-radius: 5px;
+  background-color: #353639;
+  color: #68686B;
+  font-family: 'Noto Sans KR';
+}
+.notiCon button:hover{
+  border: 1px solid #fff;
+  color: #fff;
 }
 #saveBtn{
   margin-top: 20px;
@@ -380,4 +417,39 @@ input, button, textarea, .appLog, :focus {
 }
 #setting:hover{
   filter: invert(0.1);
+}
+
+/* Multi-game Layout */
+.mainContent{
+  background-repeat: no-repeat;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+.gameArea{
+  width: 100%;
+}
+.gameList{
+  width: 95px;
+  margin-top: 32px;
+  height: calc(100vh - 52px);
+  padding: 20px 15px 0 15px;
+  background-color: #1C1E21;
+  color: #D2D2D3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  font-family: 'Spoqa Han Sans Neo';
+  font-size: 12px;
+}
+.gameList img{
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.gameList img:hover{
+  filter: brightness(1.2);
 }

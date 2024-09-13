@@ -5,6 +5,8 @@
     <title>카트플러그</title>
     <link rel="stylesheet" href="index.css" />
     <script defer src="renderer.js"></script>
+    <script defer src="js/chatConv.js"></script>
+    <script defer src="js/settings.js"></script>
   </head>
   <body>
     <!-- System Bar -->
@@ -25,7 +27,7 @@
       <footer class="footer">© H2O Studio All Rights Reserved.​</footer>
     </div>
 
-      <div class="dimmer" id="notice">
+      <div class="dimmer" id="notice" style="display: none;">
         <div class="notiWrap">
             <div class="notiHeader">
               <span id="noticeTitle">공지사항</span>
@@ -37,39 +39,47 @@
       </div>
 
      <!-- Game content -->
-      <div class="game">
-        <div class="plugHeader">
-            <img src="titleBar/kartplug.svg" class="plugLogo"/>
-            <div class="plugIcons">
-              <img src="img/youtube.svg" class="plugIcon" id="youtube"/>
-              <img src="img/discord.svg" class="plugIcon" id="discord"/>
-              <!--<img src="img/question.svg" class="plugIcon" id="question"/>-->
-            </div>
-        </div>
-        <div class="gameContent">
-          <div class="gameLeft">
-            <div class="appLog" id="logger">
-            </div>
-            <div class="convForm">
-                <input type="text" id="convInput" class="convInput" placeholder="Enter키를 눌러 변환할 수 있어요."/>
-                <button id="convBtn" class="convBtn">전송</button>
+    <div class="mainContent" id="mainContent">
+      <div class="gameArea">
+        <div class="game">
+          <div class="plugHeader">
+              <img src="titleBar/kartplug.svg" class="plugLogo"/>
+              <div class="plugIcons">
+                <img src="img/youtube.svg" class="plugIcon" id="youtube"/>
+                <img src="img/discord.svg" class="plugIcon" id="discord"/>
+                <!--<img src="img/question.svg" class="plugIcon" id="question"/>-->
+              </div>
+          </div>
+          <div class="gameContent">
+            <div class="gameLeft" id="chatArea">
+              <div class="appLog" id="logger">
+              </div>
+              <div class="convForm">
+                  <input type="text" id="convInput" class="convInput" placeholder="Enter키를 눌러 변환할 수 있어요."/>
+                  <button id="convBtn" class="convBtn">전송</button>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="gameBottom">
-          <div>
-          <h3 class="gameTitle">크레이지레이싱 카트라이더
-            <img src="img/all.png" alt="전체이용가" class="gameRating"/>
-          </h3>
-          <div class="gameVersion" id="version">버전 검사 중입니다.</div>
-        </div>
-          <div class="gameControl">
-              <button class="gameStart" id="start">불러오는 중</button>
-              <img src="setting.svg" id="setting" alt="설정">
+          <div class="gameBottom">
+            <div>
+            <h3 class="gameTitle" id="gameTitle">
+            </h3>
+            <div class="gameVersion" id="version">버전 검사 중입니다.</div>
           </div>
-        </div>
-    </div>
-    <div class="patchContent" id="patchContent">
-    </div>
+            <div class="gameControl">
+                <button class="gameStart" id="start">불러오는 중</button>
+                <img src="setting.svg" id="setting" alt="설정">
+            </div>
+          </div>
+      </div>
+      <div class="patchContent" id="patchContent">
+      </div>
+  </div>
+  <div class="gameList">
+    <span>게임 목록</span>
+    <img src="games/kart/icon.png" id="kart"/>
+    <img src="games/jlgolf/icon.png" id="jlgolf"/>
+  </div>
+</div>
   </body>
 </html>
