@@ -24,12 +24,32 @@ const noticeTitle = document.getElementById('noticeTitle');
 const noticeContent = document.getElementById('noticeContent');
 const noticeClose = document.getElementById('closeNotice');
 
+// UI
+const loading = document.getElementById('loading');
+const minimizeBtn = document.getElementById('minimizeBtn');
+const closeBtn = document.getElementById('closeBtn');
+
+// Community Links
+const youtube = document.getElementById('youtube');
+const discord = document.getElementById('discord');
+
+// Games
+const easteregg = document.getElementById('easteregg');
+const kart = document.getElementById('kart');
+const jlgolf = document.getElementById('jlgolf');
+
+const notification = new Audio('sound/message01.mp3');
+
 let tcPath = "C:\\Program Files (x86)\\TCGAME";
 let kartPath = "C:\\Program Files (x86)\\TCGAME\\TCGameApps\\kart";
 let sourceURI = "https://kartpatcher.github.io";
 let githubURI = "https://api.github.com/repos/kartpatcher/kartpatcher.github.io/releases";
-let appVersion = "1.1.1";
+let appVersion = "1.1.0";
 
+function sendNotification(title, body) {
+    ipcRenderer.send('push-notification', title, body);
+    notification.play();
+}
 
 function calculateMD5(filePath) {
     return new Promise((resolve, reject) => {
@@ -59,26 +79,13 @@ function log(message) {
 }
 // 사용 예시
 window.onload = async () => {
-    const loading = document.getElementById('loading');
-    const minimizeBtn = document.getElementById('minimizeBtn');
-    const closeBtn = document.getElementById('closeBtn');
-
-
-    // Community Links
-    const youtube = document.getElementById('youtube');
-    const discord = document.getElementById('discord');
-
-    // Games
-    const kart = document.getElementById('kart');
-    const jlgolf = document.getElementById('jlgolf');
-
     youtube.addEventListener('click', () => {
         ipcRenderer.send('open-external', 'https://www.youtube.com/@H2OStudioKR');
     });
+
     discord.addEventListener('click', () => {
         ipcRenderer.send('open-external', 'https://discord.com/invite/FjA2EqHKBB');
     });
-
 
     noticeClose.addEventListener('click', () => {
         notice.style.display = 'none';
@@ -145,6 +152,7 @@ window.onload = async () => {
         if (kartplugUpdate && kartplugUpdate.name !== 'kartplug-v' + appVersion) {
             const changelog = await fetch(sourceURI + '/changelog.txt').then(res => res.text());
             log(`[업데이트] 카트플러그 ${kartplugUpdate.name} 업데이트가 있습니다.`);
+            sendNotification('카트플러그', '버전 '+kartplugUpdate.name.replace('kartplug-v', '')+' 업데이트가 있습니다.');
             ipcRenderer.send('alert', '업데이트', '브라우저에서 열리는 페이지에서 카트플러그 업데이트를 다운로드해주세요.\n\n<서비스 변경사항>\n' + changelog);
             ipcRenderer.send('open-external', kartplugUpdate.assets[0].browser_download_url);
             ipcRenderer.send('close-window');
@@ -165,11 +173,14 @@ window.onload = async () => {
             gameUIInit('kart');
             kartInit(releases);
         });
-
         jlgolf.addEventListener('click', () => {
             loadBanners('jlgolf');
             gameUIInit('jlgolf');
             jlInit(releases);
+        });
+        easteregg.addEventListener('click', () => {
+            gameUIInit('gosegu');
+            seguInit(releases);
         });
     } catch (error) {
         console.error(error);
@@ -177,12 +188,17 @@ window.onload = async () => {
 };
 
 function gameUIInit(game) {
+    ipcRenderer.send('change-presence', game);
     if (game == 'kart') {
         gameTitle.innerHTML = '크레이지레이싱 카트라이더<img src="img/all.png" alt="전체이용가" class="gameRating"/>';
         chatArea.style.opacity = '1';
         document.body.style.backgroundColor = '#05324B';
     } else if (game == 'jlgolf') {
         gameTitle.innerText = 'JL GOLF: Nice Shot';
+        chatArea.style.opacity = '0';
+        document.body.style.backgroundColor = '#1F6A83';
+    } else if (game == 'gosegu'){
+        gameTitle.innerText = '세구라이드';
         chatArea.style.opacity = '0';
         document.body.style.backgroundColor = '#1F6A83';
     }
@@ -200,6 +216,19 @@ async function jlInit(releases) {
         noticeContent.innerHTML = '<iframe width="720" height="480" src="https://www.youtube.com/embed/W65GyGJ92Jc" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
         noticeTitle.innerText = '트레일러';
         notice.style.display = 'flex';
+    });
+}
+
+async function seguInit(releases) {
+    loading.style.display = 'none';
+    start.innerText = '▶ 게임시작';
+    version.innerText = '이걸찾네 ㅋㅋㅋㅋ';
+    start.addEventListener('click', () => {
+        start.innerText = '실행 중...';
+        start.outerHTML = start.outerHTML;
+        setTimeout(() => {
+            ipcRenderer.send('easteregg');
+        }, 3000);
     });
 }
 
@@ -224,6 +253,7 @@ async function kartInit(releases) {
 
         if (validChecksums.includes(md5Checksum)) {
             if (validChecksums[0] !== md5Checksum) {
+                sendNotification('카트플러그', '한글 패치 업데이트가 있습니다.');
                 log('[분석] 패치가 최신 버전이 아닙니다.');
                 version.innerText = '최신 버전이 아닙니다.';
                 start.innerText = '패치 업데이트';
