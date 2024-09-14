@@ -44,7 +44,7 @@ let tcPath = "C:\\Program Files (x86)\\TCGAME";
 let kartPath = "C:\\Program Files (x86)\\TCGAME\\TCGameApps\\kart";
 let sourceURI = "https://kartpatcher.github.io";
 let githubURI = "https://api.github.com/repos/kartpatcher/kartpatcher.github.io/releases";
-let appVersion = "1.1.1.1";
+let appVersion = "2.0.0";
 
 function sendNotification(title, body) {
     ipcRenderer.send('push-notification', title, body);
@@ -239,14 +239,12 @@ async function kartInit(releases) {
 
         const release = releases.find(release => release.name === validChecksums[0] && release.tag_name === 'patch');
 
-        const filePath = path.join(kartPath, 'Data', 'gui_font.rho');
+        //const filePath = path.join(kartPath, 'Data', 'gui_font.rho');
         const aaafilePath = path.join(kartPath, 'Data', 'aaa.pk');
 
         log('[분석] 파일 패치 여부를 검증합니다.');
-        const md5Checksum = await calculateMD5(filePath);
-        const aaamd5Checksum = await calculateMD5(aaafilePath);
+        const md5Checksum = await calculateMD5(aaafilePath);
         log(`[분석] Checksum 값: ${md5Checksum}`);
-        log(`[분석] Checksum 값: ${aaamd5Checksum}`);
 
         log('[분석] 패치 데이터를 불러옵니다.');
 
@@ -270,7 +268,7 @@ async function kartInit(releases) {
                     ipcRenderer.send('open-external', "tcgame://kart");
                 });
             }
-        } else if (unpatchedChecksums.includes(aaamd5Checksum)) {
+        } else if (unpatchedChecksums.includes(md5Checksum)) {
             log('[분석] 패치되지 않은 버전입니다.');
             version.innerText = '패치되지 않았습니다.';
             start.innerText = '패치 설치';
