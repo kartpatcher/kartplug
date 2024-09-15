@@ -1,0 +1,44 @@
+[
+    {
+        "type": "englishListening",
+        "question": "다음을 듣고, Dao가 구매할 계정의 이름을 입력하시오.",
+        "questionData": "<img src='jamminTest/img/eng1.png'>",
+        "audioFile": "./jamminTest/sound/eng1.mp3",
+        "answer": "계정3"
+    },
+    {
+        "type": "englishListening",
+        "question": "다음 강연 내용을 듣고, 빈칸에 공통으로 들어갈 단어를 입력하시오.",
+        "questionData": "I wanted to be a rock star. I ________ of it, and that's all I ________ of. To be more accurate, I wanted to be a pop star. This was in the late '80s. And mostly I wanted to be the fifth member of Depeche Mode or Duran Duran.",
+        "audioFile": "./jamminTest/sound/eng2.mp3",
+        "answer": "dreamed"
+    },
+    {
+        "type": "korean",
+        "question": "다음 문장에 들어가 있는 심상의 조합으로 적절한 것은? (번호)",
+        "questionData": "시계탑에서 들려오는 푸른 종소리<br>1. 시각, 후각 / 2. 청각, 시각 / 3. 촉각, 후각 / 4. 촉각, 청각 / 5. 시각, 청각",
+        "audioFile": "",
+        "answer": "5"
+    },
+    {
+        "type": "korean",
+        "question": "다음 시의 빈칸에 들어갈 말을 입력하시오. (2어절)",
+        "questionData": "자세히 보아야 예쁘다.<br>오래 보아야 사랑스럽다.<br>__ 그렇다.",
+        "audioFile": "",
+        "answer": "너도"
+    },
+    {
+        "type": "english",
+        "question": "다음 포스터에 대한 내용으로 적절하지 않은 것은? (번호)",
+        "questionData": "<img src='jamminTest/img/eng3.png'><br>1. 1등 상품은 700 K-COIN이다.<br>2. 니트로 스튜디오의 직원은 참가할 수 없다.<br>3. 행사에 대한 문의는 support@n2o.studio에서 할 수 있다.<br>4. 행사는 2번째로 큰 골프 컨테스트다.<br>5. 참가 비용은 세금을 포함하여 $108이다.",
+        "audioFile": "",
+        "answer": "4"
+    },
+    {
+        "type": "english",
+        "question": "다음 지문에서 전체 내용과 관련없는 문장은? (번호)",
+        "questionData": "Kartrider: Drift is a game made by NEXON Korea and Nitro Studio. This game was released in 2023, as a successor to the original game, Crazy Racing Kartrider. (1) While Kartrider was vulnerable to defective physics, Kartrider: Drift tried to fix those physics. This little but great fix was made possible by Unreal Engine 4. (2) Corporates who earn more than $100,000 should pay for the Unity Pro plan. By utilizing cutting-edge graphics of Unreal Engine 4, minor details were increased too. (3) For example, 'World Gangnam Street' track copied the street of Gangnam with gimmicks for more fun gameplay. This is not limited to this track, but even forest, village, and moonhill city got a graphical upgrade using shaders and high-polygon 3D models. (4) Furthermore, it has much lower paywalls than the average NEXON game. Maplestory, for instance, requires users to pay at least $100 to decorate their characters. (5) But it's free here, only depending on the user's luck since it's a loot box.",
+        "audioFile": "",
+        "answer": "2"
+    }
+]

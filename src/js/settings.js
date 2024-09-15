@@ -2,10 +2,14 @@ const settingsBtn = document.getElementById('setting');
 const settingFile = fs.readFileSync(path.join(__dirname, 'setting.html'), 'utf8');
 const configPath = path.join(process.cwd(), 'config.json');
 
+// 확인버튼도 못누르는 병신같은 개초딩들 
 if (!fs.existsSync(configPath)) {
     fs.writeFileSync(configPath, JSON.stringify({
         tcPath: "C:\\Program Files (x86)\\TCGAME",
-        kartPath: "C:\\Program Files (x86)\\TCGAME\\TCGameApps\\kart"
+        kartPath: "C:\\Program Files (x86)\\TCGAME\\TCGameApps\\kart",
+        jamminTestComplete: false,
+        jamminTestTimeStamp: 0,
+        jamminTestCount: 0
     }));
 }
 else {
@@ -15,6 +19,15 @@ else {
     }
     if (config.tcPath){
         tcPath = config.tcPath;
+    }
+    if (config.jamminTestComplete){
+        jamminTestComplete = config.jamminTestComplete;
+    }
+    if (config.jamminTestTimeStamp){
+        jamminTestTimeStamp = config.jamminTestTimeStamp;
+    }
+    if (config.jamminTestCount){
+        jamminTestCount = config.jamminTestCount;
     }
 }
 settingsBtn.addEventListener('click', () => {
@@ -69,7 +82,10 @@ settingsBtn.addEventListener('click', () => {
         tcPath = tempTcPath;
         fs.writeFileSync(configPath, JSON.stringify({
             tcPath,
-            kartPath
+            kartPath,
+            jamminTestComplete,
+            jamminTestTimeStamp,
+            jamminTestCount
         }));
         window.location.reload();
     });

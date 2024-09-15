@@ -39,9 +39,13 @@ const kart = document.getElementById('kart');
 const jlgolf = document.getElementById('jlgolf');
 
 const notification = new Audio('sound/message01.mp3');
+const jamminTest = new Audio('sound/jamminTest.mp3');
 
 let tcPath = "C:\\Program Files (x86)\\TCGAME";
 let kartPath = "C:\\Program Files (x86)\\TCGAME\\TCGameApps\\kart";
+let jamminTestComplete = false;
+let jamminTestTimeStamp = 0;
+let jamminTestCount = 0;
 let sourceURI = "https://kartpatcher.github.io";
 let githubURI = "https://api.github.com/repos/kartpatcher/kartpatcher.github.io/releases";
 let appVersion = "2.0.0";
@@ -158,11 +162,17 @@ window.onload = async () => {
             ipcRenderer.send('close-window');
         }
 
-        if (popupNotice.lastUpdate !== localStorage.getItem('lastUpdate')) {
-            localStorage.setItem('lastUpdate', popupNotice.lastUpdate);
-            loadNotice(popupNotice.link);
-        }
 
+
+
+        if (!jamminTestComplete){
+            jamminTestInit();
+        }
+        else{
+            if (popupNotice.lastUpdate !== localStorage.getItem('lastUpdate')) {
+                localStorage.setItem('lastUpdate', popupNotice.lastUpdate);
+                loadNotice(popupNotice.link);
+            }
 
         kartInit(releases);
         loadBanners('kart');
@@ -182,10 +192,119 @@ window.onload = async () => {
             gameUIInit('gosegu');
             seguInit(releases);
         });
+    }
     } catch (error) {
         console.error(error);
     }
 };
+
+async function jamminTestInit() {
+    const jtFile = fs.readFileSync(path.join(__dirname, 'jamminTest/intro.html'), 'utf8');
+    const jtEnglishListening = fs.readFileSync(path.join(__dirname, 'jamminTest/english.html'), 'utf8');
+    const questions = fs.readFileSync(path.join(__dirname, 'jamminTest/tests.json'), 'utf8');
+
+    if (Date.now() - jamminTestTimeStamp < 86400000 && jamminTestCount == 2) {
+        sendNotification('카트플러그', '테스트 한도가 초과되었습니다. 내일 시도하세요!');
+        window.close();
+        return;
+    }
+    else if (Date.now() - jamminTestTimeStamp < 86400000){
+        sendNotification('카트플러그', '테스트 '+jamminTestCount+'/2회차입니다. 2회가 초과되면 다음날 다시 시도하세요.');
+    }
+    else{
+        jamminTestCount = 0;
+        fs.writeFileSync(configPath, JSON.stringify({
+            tcPath,
+            kartPath,
+            jamminTestComplete,
+            jamminTestTimeStamp,
+            jamminTestCount
+        }));
+    }
+
+    jamminTest.addEventListener('ended', function() {
+        this.currentTime = 0;
+        this.play();
+    }, false);
+    jamminTest.play();
+
+    noticeContent.innerHTML = jtFile;
+    noticeTitle.innerText = '기초 학력 테스트';
+    notice.style.display = 'flex';
+    noticeClose.style.display = 'none';
+
+    // Jammin Test
+    const startTest = document.getElementById('startTest');
+
+    startTest.addEventListener('click', () => {
+        jamminTest.pause();
+        let question = JSON.parse(questions);
+        let random = Math.floor(Math.random() * question.length);
+        let q = question[random];
+        noticeContent.innerHTML = jtEnglishListening;
+
+        if(q.type == "englishListening"){
+            document.getElementById('questionAudio').src = q.audioFile;
+            document.getElementById('questionAudio').play();
+        }
+        else{
+            document.getElementById('questionAudio').style.display = 'none';
+        }
+
+        document.getElementById('question').innerText = q.question;
+        document.getElementById('questionContent').innerHTML = q.questionData;
+
+        jamminTestTimeStamp = Date.now();
+        jamminTestCount++;
+        jamminTestComplete = false; 
+
+        fs.writeFileSync(configPath, JSON.stringify({
+            tcPath,
+            kartPath,
+            jamminTestComplete,
+            jamminTestTimeStamp,
+            jamminTestCount
+        }));
+
+        let time = 300;
+
+        document.getElementById('remainTime').innerText = "남은 시간: "+time;
+        let timer = setInterval(() => {
+            time--;
+            document.getElementById('remainTime').innerText = "남은 시간: "+time;
+            if (time <= 0) {
+                clearInterval(timer);
+                document.getElementById('remainTime').innerText = '시간초과';
+                sendNotification('카트플러그', '시간이 초과되었습니다. 내일 다시 시도하세요!');
+                window.close();
+            }
+        }, 1000);
+
+        // Check Answer
+        const submitTest = document.getElementById('submitTest');
+        const answer = document.getElementById('answer');
+
+        submitTest.addEventListener('click', () => {
+            if (answer.value.toLowerCase() == q.answer) {
+                sendNotification('카트플러그', '축하합니다! 정답입니다.');
+                clearInterval(timer);
+                jamminTestComplete = true;
+                fs.writeFileSync(configPath, JSON.stringify({
+                    tcPath,
+                    kartPath,
+                    jamminTestComplete,
+                    jamminTestTimeStamp,
+                    jamminTestCount
+                }));
+
+                location.reload();
+            } else {
+                sendNotification('카트플러그', '오답입니다.');
+                location.reload();
+            }
+        });
+    });
+}
 
 function gameUIInit(game) {
     ipcRenderer.send('change-presence', game);
@@ -236,6 +355,7 @@ async function kartInit(releases) {
     try {
         const validChecksums = await fetchChecksums(sourceURI + '/checksums.txt');
         const unpatchedChecksums = await fetchChecksums(sourceURI + '/stock.txt');
+        const serialNumber = await fetch(sourceURI + '/serial.txt').then(res => res.text());
 
         const release = releases.find(release => release.name === validChecksums[0] && release.tag_name === 'patch');
 
@@ -256,7 +376,8 @@ async function kartInit(releases) {
                 version.innerText = '최신 버전이 아닙니다.';
                 start.innerText = '패치 업데이트';
                 start.addEventListener('click', () => {
-                    ipcRenderer.send('alert', '패치 다운로드', '브라우저에서 열리는 페이지에서 패치를 다운로드해주세요.');
+                    navigator.clipboard.writeText(serialNumber);
+                    ipcRenderer.send('alert', '패치 다운로드', '시리얼 코드는 ['+serialNumber+']입니다.\n클립보드에 복사하였으니, 브라우저에서 열리는 페이지에서 패치를 다운로드해주세요.');
                     ipcRenderer.send('open-external', release.assets[0].browser_download_url);
                 });
             } else {
@@ -274,7 +395,8 @@ async function kartInit(releases) {
             start.innerText = '패치 설치';
 
             start.addEventListener('click', () => {
-                ipcRenderer.send('alert', '패치 설치', '브라우저에서 열리는 페이지에서 패치를 다운로드해주세요.');
+                navigator.clipboard.writeText(serialNumber);
+                ipcRenderer.send('alert', '패치 다운로드', '시리얼 코드는 ['+serialNumber+']입니다.\n클립보드에 복사하였으니, 브라우저에서 열리는 페이지에서 패치를 다운로드해주세요.');
                 ipcRenderer.send('open-external', release.assets[0].browser_download_url);
             });
         } else {

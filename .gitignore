@@ -90,3 +90,6 @@ typings/
 
 # Electron-Forge
 out/
+
+# Test Config
+config.json
