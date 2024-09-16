@@ -9,6 +9,9 @@ module.exports = {
     appBundleId: 'com.kart.plug',
     appCategoryType: 'public.app-category.games',
     asar: true,
+    win32metadata: {
+      "requested-execution-level": 'requireAdministrator'
+    },
     extraResource: [
       path.join(process.cwd(), "icons", "icon.ico"),
     ],
