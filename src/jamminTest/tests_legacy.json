@@ -1,14 +1,28 @@
 [
     {
+        "type": "englishListening",
+        "question": "다음을 듣고, Dao가 구매할 계정의 이름을 입력하시오.",
+        "questionData": "<img src='jamminTest/img/eng1.png'>",
+        "audioFile": "./jamminTest/sound/eng1.mp3",
+        "answer": "계정3"
+    },
+    {
+        "type": "englishListening",
+        "question": "다음 강연 내용을 듣고, 빈칸에 공통으로 들어갈 단어를 입력하시오.",
+        "questionData": "I wanted to be a rock star. I ________ of it, and that's all I ________ of. To be more accurate, I wanted to be a pop star. This was in the late '80s. And mostly I wanted to be the fifth member of Depeche Mode or Duran Duran.",
+        "audioFile": "./jamminTest/sound/eng2.mp3",
+        "answer": "dreamed"
+    },
+    {
         "type": "korean",
-        "question": "다음 문장에 들어가 있는 심상의 조합을 입력하세요. (번호)",
+        "question": "다음 문장에 들어가 있는 심상의 조합으로 적절한 것은? (번호)",
         "questionData": "시계탑에서 들려오는 푸른 종소리<br>1. 시각, 후각 / 2. 청각, 시각 / 3. 촉각, 후각 / 4. 촉각, 청각 / 5. 시각, 청각",
         "audioFile": "",
         "answer": "5"
     },
     {
         "type": "korean",
-        "question": "다음 시의 빈칸에 들어갈 말을 입력하세요. (2글자)",
+        "question": "다음 시의 빈칸에 들어갈 말을 입력하시오. (2어절)",
         "questionData": "자세히 보아야 예쁘다.<br>오래 보아야 사랑스럽다.<br>__ 그렇다.",
         "audioFile": "",
         "answer": "너도"

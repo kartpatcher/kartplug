@@ -7,6 +7,7 @@ const crypto = require('crypto');
 const fs = require('fs');
 const https = require('https');
 const path = require('path');
+const unzipper = require('unzipper');
 
 // Logger
 const logger = document.getElementById('logger');
@@ -23,11 +24,14 @@ const notice = document.getElementById('notice');
 const noticeTitle = document.getElementById('noticeTitle');
 const noticeContent = document.getElementById('noticeContent');
 const noticeClose = document.getElementById('closeNotice');
+const noticeWrap = document.getElementById('notiWrap');
+const oobe = document.getElementById('oobe');
 
 // UI
 const loading = document.getElementById('loading');
 const minimizeBtn = document.getElementById('minimizeBtn');
 const closeBtn = document.getElementById('closeBtn');
+const loadingText = document.getElementById('loadingText');
 
 // Community Links
 const youtube = document.getElementById('youtube');
@@ -40,15 +44,18 @@ const jlgolf = document.getElementById('jlgolf');
 
 const notification = new Audio('sound/message01.mp3');
 const jamminTest = new Audio('sound/jamminTest.mp3');
+const success = new Audio('sound/clear.mp3');
+const dialogA = new Audio('sound/dialog.mp3');
 
 let tcPath = "C:\\Program Files (x86)\\TCGAME";
 let kartPath = "C:\\Program Files (x86)\\TCGAME\\TCGameApps\\kart";
 let jamminTestComplete = false;
 let jamminTestTimeStamp = 0;
 let jamminTestCount = 0;
+let downloadInProgress = false;
 let sourceURI = "https://kartpatcher.github.io";
 let githubURI = "https://api.github.com/repos/kartpatcher/kartpatcher.github.io/releases";
-let appVersion = "2.0.0";
+let appVersion = "2.0.1";
 
 function sendNotification(title, body) {
     ipcRenderer.send('push-notification', title, body);
@@ -122,6 +129,10 @@ window.onload = async () => {
         }
 
         async function loadBanners(game) {
+            if (downloadInProgress) {  
+                return;
+            }
+
             let bannerURI = "";
             if (game == 'kart') {
                 bannerURI = sourceURI + '/banner.json';
@@ -157,9 +168,10 @@ window.onload = async () => {
             const changelog = await fetch(sourceURI + '/changelog.txt').then(res => res.text());
             log(`[업데이트] 카트플러그 ${kartplugUpdate.name} 업데이트가 있습니다.`);
             sendNotification('카트플러그', '버전 '+kartplugUpdate.name.replace('kartplug-v', '')+' 업데이트가 있습니다.');
-            ipcRenderer.send('alert', '업데이트', '브라우저에서 열리는 페이지에서 카트플러그 업데이트를 다운로드해주세요.\n\n<서비스 변경사항>\n' + changelog);
-            ipcRenderer.send('open-external', kartplugUpdate.assets[0].browser_download_url);
-            ipcRenderer.send('close-window');
+            await downloadFile(kartplugUpdate.assets[0].browser_download_url, __dirname, 'kartplug');
+            //ipcRenderer.send('alert', '업데이트', '브라우저에서 열리는 페이지에서 카트플러그 업데이트를 다운로드해주세요.\n\n<서비스 변경사항>\n' + changelog);
+            //ipcRenderer.send('open-external', kartplugUpdate.assets[0].browser_download_url);
+            //ipcRenderer.send('close-window');
         }
 
 
@@ -198,6 +210,41 @@ window.onload = async () => {
     }
 };
 
+function playSuccessAni(){
+    success.play();
+    document.getElementById('successCinema').style.display = 'flex';
+    document.getElementById('successCinema').classList.add('success');
+    document.getElementById('successText').classList.add('successAni');
+    setTimeout(() => {
+        document.getElementById('successText').style.display = 'none';
+    }, 5000);
+
+    setTimeout(() => {
+        document.getElementById('successCinema').style.display = 'none';
+        dialogA.play();
+        ipcRenderer.send('alert', '카트플러그', '축하합니다! 테스트를 완료하였습니다.');
+        location.reload();
+    }, 7000);
+}
+
+function playSuccessAniDownload(){
+    success.play();
+    document.getElementById('successCinema').style.display = 'flex';
+    document.getElementById('successCinema').classList.add('success');
+    document.getElementById('successText').classList.add('successAni');
+    
+    setTimeout(() => {
+        document.getElementById('successText').style.display = 'none';
+        kart.click();
+    
+    }, 5000);
+
+    setTimeout(() => {
+        document.getElementById('successCinema').style.display = 'none';
+        dialogA.play();
+    }, 5000);
+}
+
 async function jamminTestInit() {
     const jtFile = fs.readFileSync(path.join(__dirname, 'jamminTest/intro.html'), 'utf8');
     const jtEnglishListening = fs.readFileSync(path.join(__dirname, 'jamminTest/english.html'), 'utf8');
@@ -229,21 +276,39 @@ async function jamminTestInit() {
     jamminTest.play();
 
     noticeContent.innerHTML = jtFile;
-    noticeTitle.innerText = '기초 학력 테스트';
+    noticeTitle.innerText = '시작하기';
+    oobe.style.display = 'flex';
+    oobe.classList.add('fadeIn');
     notice.style.display = 'flex';
+    noticeWrap.classList.add('animate');
+
     noticeClose.style.display = 'none';
 
     // Jammin Test
     const startTest = document.getElementById('startTest');
+    const passTest = document.getElementById('hipass');
+
+    passTest.addEventListener('click', () => {
+        jamminTest.pause();
+        playSuccessAni();
+        jamminTestComplete = true;
+        fs.writeFileSync(configPath, JSON.stringify({
+            tcPath,
+            kartPath,
+            jamminTestComplete,
+            jamminTestTimeStamp,
+            jamminTestCount
+        }));
+    });
 
     startTest.addEventListener('click', () => {
-        jamminTest.pause();
         let question = JSON.parse(questions);
         let random = Math.floor(Math.random() * question.length);
         let q = question[random];
         noticeContent.innerHTML = jtEnglishListening;
 
         if(q.type == "englishListening"){
+            jamminTest.pause();
             document.getElementById('questionAudio').src = q.audioFile;
             document.getElementById('questionAudio').play();
         }
@@ -286,7 +351,8 @@ async function jamminTestInit() {
 
         submitTest.addEventListener('click', () => {
             if (answer.value.toLowerCase() == q.answer) {
-                sendNotification('카트플러그', '축하합니다! 정답입니다.');
+                jamminTest.pause();
+                playSuccessAni();
                 clearInterval(timer);
                 jamminTestComplete = true;
                 fs.writeFileSync(configPath, JSON.stringify({
@@ -296,8 +362,6 @@ async function jamminTestInit() {
                     jamminTestTimeStamp,
                     jamminTestCount
                 }));
-
-                location.reload();
             } else {
                 sendNotification('카트플러그', '오답입니다.');
                 location.reload();
@@ -306,7 +370,103 @@ async function jamminTestInit() {
     });
 }
 
+async function downloadFile(url, filepath, type) {
+    if (downloadInProgress) {
+        return;
+    }
+    downloadInProgress = true;
+    const downloadUrl = url;
+    let zipFilePath;
+
+    if (type == 'kart') {
+        zipFilePath = path.join(filepath, 'patcha.zip');
+    } else {
+        zipFilePath = path.join(filepath, 'Setup.exe');
+    }
+
+    try {
+        fs.unlinkSync(zipFilePath);
+    } catch (error) {
+        console.log('No old file');
+    }
+
+    // Ensure the directory exists
+    fs.mkdirSync(filepath, { recursive: true });
+
+    // 다운로드
+    start.classList.add('download');
+    log('[다운로드] 패치 파일을 다운로드합니다.');
+
+    const response = await fetch(downloadUrl);
+    const totalBytes = parseInt(response.headers.get('content-length'), 10);
+    let downloadedBytes = 0;
+
+    const fileStream = fs.createWriteStream(zipFilePath, { flags: 'w' });
+    const reader = response.body.getReader();
+
+    const pump = async () => {
+        const { done, value } = await reader.read();
+        if (done) {
+            fileStream.end();
+            return;
+        }
+
+        fileStream.write(value);
+        downloadedBytes += value.length;
+        const percentage = ((downloadedBytes / totalBytes) * 100).toFixed(2);
+        if (type == 'kart'){
+        start.innerText = `다운로드 중... ${percentage}%`;
+        }
+        else{
+            loadingText.innerHTML = `카트플러그 업데이트가 있습니다.<br><br>다운로드 중... ${percentage}%`;
+        }
+
+        await pump();
+    };
+
+    await pump();
+
+    // Ensure fileStream has finished writing
+    await new Promise((resolve, reject) => {
+        fileStream.on('finish', resolve);
+        fileStream.on('error', reject);
+    });
+
+    if (type == 'kart') {
+    // 압축 해제
+    log('[압축 해제] 패치 파일을 압축 해제합니다.');
+    await new Promise((resolve, reject) => {
+        fs.createReadStream(zipFilePath)
+            .pipe(unzipper.Extract({ path: filepath }))
+            .on('close', resolve)
+            .on('error', reject);
+    });
+
+    log('[완료] 패치 파일이 성공적으로 업데이트되었습니다.');
+    fs.unlinkSync(zipFilePath); // 압축 파일 삭제
+    start.innerText = '패치 완료';
+    downloadInProgress = false;
+    playSuccessAniDownload();
+}
+else{
+    log('[다운로드] 파일을 실행합니다.');
+    const { exec } = require('child_process');
+    exec(zipFilePath, (err, stdout, stderr) => {
+        if (err) {
+            ipcRenderer.send('alert', '오류', '파일을 실행하는 중 오류가 발생했습니다.');
+            return;
+        }
+        console.log(stdout);
+        window.close();
+    });
+}
+}
+
 function gameUIInit(game) {
+    if (downloadInProgress) {  
+        return;
+    }
+
     ipcRenderer.send('change-presence', game);
     if (game == 'kart') {
         gameTitle.innerHTML = '크레이지레이싱 카트라이더<img src="img/all.png" alt="전체이용가" class="gameRating"/>';
@@ -323,11 +483,21 @@ function gameUIInit(game) {
     }
     logger.innerHTML = '';
     mainContent.style.backgroundImage = 'url("games/' + game + '/defaultbg.png")';
-    start.outerHTML = start.outerHTML;
+    try{
+        start.outerHTML = start.outerHTML;
+    }
+    catch(e){
+    }
+
     start = document.getElementById('start');
+    start.classList.remove('download');
 }
 
 async function jlInit(releases) {
+    if (downloadInProgress) {  
+        return;
+    }
+    
     loading.style.display = 'none';
     start.innerText = '▶ 트레일러 보기';
     version.innerText = '출시 예정';
@@ -339,6 +509,10 @@ async function jlInit(releases) {
 }
 
 async function seguInit(releases) {
+    if (downloadInProgress) {  
+        return;
+    }
+    
     loading.style.display = 'none';
     start.innerText = '▶ 게임시작';
     version.innerText = '이걸찾네 ㅋㅋㅋㅋ';
@@ -352,10 +526,14 @@ async function seguInit(releases) {
 }
 
 async function kartInit(releases) {
+    if (downloadInProgress) {  
+        return;
+    }
+    
     try {
         const validChecksums = await fetchChecksums(sourceURI + '/checksums.txt');
         const unpatchedChecksums = await fetchChecksums(sourceURI + '/stock.txt');
-        const serialNumber = await fetch(sourceURI + '/serial.txt').then(res => res.text());
+        //const serialNumber = await fetch(sourceURI + '/serial.txt').then(res => res.text());
 
         const release = releases.find(release => release.name === validChecksums[0] && release.tag_name === 'patch');
 
@@ -376,9 +554,7 @@ async function kartInit(releases) {
                 version.innerText = '최신 버전이 아닙니다.';
                 start.innerText = '패치 업데이트';
                 start.addEventListener('click', () => {
-                    navigator.clipboard.writeText(serialNumber);
-                    ipcRenderer.send('alert', '패치 다운로드', '시리얼 코드는 ['+serialNumber+']입니다.\n클립보드에 복사하였으니, 브라우저에서 열리는 페이지에서 패치를 다운로드해주세요.');
-                    ipcRenderer.send('open-external', release.assets[0].browser_download_url);
+                    downloadFile(release.assets[0].browser_download_url, kartPath, 'kart');
                 });
             } else {
                 log('[분석] 최신 버전입니다.');
@@ -395,9 +571,7 @@ async function kartInit(releases) {
             start.innerText = '패치 설치';
 
             start.addEventListener('click', () => {
-                navigator.clipboard.writeText(serialNumber);
-                ipcRenderer.send('alert', '패치 다운로드', '시리얼 코드는 ['+serialNumber+']입니다.\n클립보드에 복사하였으니, 브라우저에서 열리는 페이지에서 패치를 다운로드해주세요.');
-                ipcRenderer.send('open-external', release.assets[0].browser_download_url);
+                downloadFile(release.assets[0].browser_download_url, kartPath, 'kart');
             });
         } else {
             log('[분석] 한글패치가 제작된 버전이 아닙니다.');

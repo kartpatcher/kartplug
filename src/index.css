@@ -19,8 +19,8 @@ body{
 :not(input):not(textarea)::before {
     -webkit-user-select: none;
     user-select: none;
-    -webkit-user-drag: none;
-    -webkit-app-region: no-drag;
+    /*-webkit-user-drag: none;
+    -webkit-app-region: no-drag;*/
 }
 input, button, textarea, .appLog, :focus {
     outline: none;
@@ -50,6 +50,7 @@ input, button, textarea, .appLog, :focus {
   line-height: 1;
   color: white;
   font-family: 'Spoqa Han Sans Neo';
+  text-align: center;
 }
 .footer{
   font-family: 'Spoqa Han Sans Neo';
@@ -173,7 +174,22 @@ input, button, textarea, .appLog, :focus {
   background-size: 200% 100%; 
   transition:background-size 1s, background-color 1s;
 }
-		
+.download {
+  background-color:#2497FF;
+  background-image:linear-gradient(to left, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,.5) 100%);
+  background-repeat:no-repeat;
+  background-size: 0% 100%;
+  animation: downloadAni 5s linear infinite;
+  opacity: 0.5;
+}
+@keyframes downloadAni {
+  0% {
+    background-size: 200% 100%;
+  }
+  100% {
+    background-size: 0% 100%;
+  }
+}
 .gameStart:hover{
   background-color: #0F77FF;
   color: #fff;
@@ -462,4 +478,82 @@ input[type='checkbox']:checked+label{
 }
 .gameList img:hover{
   filter: brightness(1.2);
+}
+
+/* 잼민이테스트 성공 */
+#successCinema{
+  background-image: url('img/successBg.png');
+  background-color: transparent;
+  background-position: center;
+}
+#successCinema, .success{
+  animation: successCin 0.5s linear;
+}
+#successCinema .success{
+  background-image: url('img/result.png');
+  width: 180px;
+  height: 100px;
+  background-position: -7px 175px;
+}
+
+.successAni{
+  animation: successAni 0.5s linear;
+  animation-delay: 4s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes successCin {
+  0% {
+    background-size: 200%;
+  }
+  100% {
+    background-size: 100%;
+  }
+}
+@keyframes successAni {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+#oobe{
+  background-image: url('img/20221222_페이스리프트-테마-로딩페이지_1600x900.png');
+  background-color: transparent;
+  opacity: 0;
+}
+
+.fadeIn{
+  animation: fadeIn 0.5s forwards;
+}
+
+.notiwrap, .animate{
+  transition-property: all;
+  transition-timing-function: cubic-bezier(.4,0,.2,1);
+  transition-duration: .15s;
+  animation: fadeIn 0.3s ease-out, zoomIn 0.3s ease-out;
+  animation-fill-mode: forwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes zoomIn {
+  0% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.hipass{
+  display: none;
 }

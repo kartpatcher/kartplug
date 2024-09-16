@@ -21,14 +21,18 @@
         </div>
      </div>
 
+
      <div class="dimmer" id="loading" style="background-color: #191a1c; flex-direction: column;">
       <div class="loading"></div>
-      <div class="loadingText">카트플러그 실행 중...</div>
+      <div class="loadingText" id="loadingText">카트플러그 실행 중...</div>
       <footer class="footer">© H2O Studio All Rights Reserved.​</footer>
     </div>
 
+    <div class="dimmer" id="oobe" style="display: none;">
+    </div>
+
       <div class="dimmer" id="notice" style="display: none;">
-        <div class="notiWrap">
+        <div class="notiWrap" id="notiWrap">
             <div class="notiHeader">
               <span id="noticeTitle">공지사항</span>
               <img src="titleBar/close.svg" id="closeNotice" />
@@ -38,6 +42,9 @@
         </div>
       </div>
 
+      <div class="dimmer" id="successCinema" style="display:none;">
+        <div class="success" id="successText"></div>
+    </div>
      <!-- Game content -->
     <div class="mainContent" id="mainContent">
       <div class="gameArea">
