@@ -55,7 +55,7 @@ let jamminTestCount = 0;
 let downloadInProgress = false;
 let sourceURI = "https://kartpatcher.github.io";
 let githubURI = "https://api.github.com/repos/kartpatcher/kartpatcher.github.io/releases";
-let appVersion = "2.0.1";
+let appVersion = "2.0.2";
 
 function sendNotification(title, body) {
     ipcRenderer.send('push-notification', title, body);
