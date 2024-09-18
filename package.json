@@ -33,6 +33,7 @@
     "electron-json-storage": "^4.6.0",
     "electron-overlay-window": "^3.3.0",
     "electron-squirrel-startup": "^1.0.1",
-    "unzipper": "^0.12.3"
+    "unzipper": "^0.12.3",
+    "winreg": "^1.2.5"
   }
 }

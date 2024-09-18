@@ -1,12 +1,56 @@
 const settingsBtn = document.getElementById('setting');
 const settingFile = fs.readFileSync(path.join(__dirname, 'setting.html'), 'utf8');
-const configPath = path.join(process.cwd(), 'config.json');
+const configPath = path.join(process.cwd(), '..', 'config.json');
+
+const regKey = new Registry({
+    hive: Registry.HKCU,
+    key: '\\Software\\TCGame\\kart'
+});
+
+const kdRegKey = new Registry({
+    hive: Registry.HKLMSOFTWARE,
+    key: '\\WOW6432Node\\Nexon\\KartDrift'
+});
+
+kdRegKey.values((err, items) => {
+    if (err) {
+        console.error(err);
+        return;
+    }
+    
+    items.forEach(item => {
+        if (item.name === 'IconDestPath2') {
+            kartDriftPath = item.value;
+        }
+        kdRegSuccess = true;
+    });
+
+    console.log('Game Path:', kartDriftPath);
+});
+
+regKey.values((err, items) => {
+    if (err) {
+        console.error(err);
+        return;
+    }
+    
+    items.forEach(item => {
+        if (item.name === 'gamepath') {
+            kartPath = item.value;
+        }
+        if (item.name === 'version') {
+            kartVersion = item.value;
+        }
+        tcRegSuccess = true;
+    });
+
+    console.log('Game Path:', kartPath);
+    console.log('Game Version:', kartVersion);
+});
 
 // 확인버튼도 못누르는 병신같은 개초딩들 
 if (!fs.existsSync(configPath)) {
     fs.writeFileSync(configPath, JSON.stringify({
-        tcPath: "C:\\Program Files (x86)\\TCGAME",
-        kartPath: "C:\\Program Files (x86)\\TCGAME\\TCGameApps\\kart",
         jamminTestComplete: false,
         jamminTestTimeStamp: 0,
         jamminTestCount: 0
@@ -14,12 +58,7 @@ if (!fs.existsSync(configPath)) {
 }
 else {
     const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-    if (config.kartPath){
-        kartPath = config.kartPath;
-    }
-    if (config.tcPath){
-        tcPath = config.tcPath;
-    }
+    
     if (config.jamminTestComplete){
         jamminTestComplete = config.jamminTestComplete;
     }
@@ -30,12 +69,13 @@ else {
         jamminTestCount = config.jamminTestCount;
     }
 }
+
 settingsBtn.addEventListener('click', () => {
     noticeContent.innerHTML = settingFile;
     noticeTitle.innerText = '설정 ('+appVersion+')';
     notice.style.display = 'flex';
 
-    const searchKart = document.getElementById('searchKart');
+    /*const searchKart = document.getElementById('searchKart');
     const searchTc = document.getElementById('searchTc');
     const saveBtn = document.getElementById('saveBtn');
     const resetBtn = document.getElementById('resetBtn');
@@ -88,5 +128,5 @@ settingsBtn.addEventListener('click', () => {
             jamminTestCount
         }));
         window.location.reload();
-    });
+    });*/
 });

@@ -120,7 +120,7 @@ const createWindow = () => {
     easterEggWindow.loadFile(path.join(__dirname, 'easteregg.html'));
 
     easterEggWindow.webContents.on('will-navigate', (e, url) => {
-      if (url !== 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' && url !== 'easteregg.html') {
+      if (url !== 'https://www.youtube.com/embed/uBEeovd0Zc0?autoplay=1&loop=1' && url !== 'easteregg.html') {
         easterEggWindow.close();
       }
     });

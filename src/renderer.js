@@ -8,6 +8,7 @@ const fs = require('fs');
 const https = require('https');
 const path = require('path');
 const unzipper = require('unzipper');
+const Registry = require('winreg');
 
 // Logger
 const logger = document.getElementById('logger');
@@ -47,15 +48,20 @@ const jamminTest = new Audio('sound/jamminTest.mp3');
 const success = new Audio('sound/clear.mp3');
 const dialogA = new Audio('sound/dialog.mp3');
 
-let tcPath = "C:\\Program Files (x86)\\TCGAME";
+let tcRegSuccess = false;
 let kartPath = "C:\\Program Files (x86)\\TCGAME\\TCGameApps\\kart";
+let kartVersion = "P0000";
+
+let kdRegSuccess = false;
+let kartDriftPath = "C:\\Program Files (x86)\\TCGAME\\TCGameApps\\kartdrift";
+
 let jamminTestComplete = false;
 let jamminTestTimeStamp = 0;
 let jamminTestCount = 0;
 let downloadInProgress = false;
 let sourceURI = "https://kartpatcher.github.io";
 let githubURI = "https://api.github.com/repos/kartpatcher/kartpatcher.github.io/releases";
-let appVersion = "2.0.2.1";
+let appVersion = "2.0.2.2";
 
 function sendNotification(title, body) {
     ipcRenderer.send('push-notification', title, body);
@@ -168,7 +174,7 @@ window.onload = async () => {
             const changelog = await fetch(sourceURI + '/changelog.txt').then(res => res.text());
             log(`[업데이트] 카트플러그 ${kartplugUpdate.name} 업데이트가 있습니다.`);
             sendNotification('카트플러그', '버전 '+kartplugUpdate.name.replace('kartplug-v', '')+' 업데이트가 있습니다.');
-            await downloadFile(kartplugUpdate.assets[0].browser_download_url, __dirname, 'kartplug');
+            await downloadFile(kartplugUpdate.assets[0].browser_download_url, process.cwd(), 'kartplug');
             //ipcRenderer.send('alert', '업데이트', '브라우저에서 열리는 페이지에서 카트플러그 업데이트를 다운로드해주세요.\n\n<서비스 변경사항>\n' + changelog);
             //ipcRenderer.send('open-external', kartplugUpdate.assets[0].browser_download_url);
             //ipcRenderer.send('close-window');
@@ -261,8 +267,6 @@ async function jamminTestInit() {
     else{
         jamminTestCount = 0;
         fs.writeFileSync(configPath, JSON.stringify({
-            tcPath,
-            kartPath,
             jamminTestComplete,
             jamminTestTimeStamp,
             jamminTestCount
@@ -293,8 +297,6 @@ async function jamminTestInit() {
         playSuccessAni();
         jamminTestComplete = true;
         fs.writeFileSync(configPath, JSON.stringify({
-            tcPath,
-            kartPath,
             jamminTestComplete,
             jamminTestTimeStamp,
             jamminTestCount
@@ -324,8 +326,6 @@ async function jamminTestInit() {
         jamminTestComplete = false; 
 
         fs.writeFileSync(configPath, JSON.stringify({
-            tcPath,
-            kartPath,
             jamminTestComplete,
             jamminTestTimeStamp,
             jamminTestCount
@@ -356,8 +356,6 @@ async function jamminTestInit() {
                 clearInterval(timer);
                 jamminTestComplete = true;
                 fs.writeFileSync(configPath, JSON.stringify({
-                    tcPath,
-                    kartPath,
                     jamminTestComplete,
                     jamminTestTimeStamp,
                     jamminTestCount
@@ -530,7 +528,7 @@ async function kartInit(releases) {
         return;
     }
     
-    try {
+    if (tcRegSuccess) {
         const validChecksums = await fetchChecksums(sourceURI + '/checksums.txt');
         const unpatchedChecksums = await fetchChecksums(sourceURI + '/stock.txt');
         //const serialNumber = await fetch(sourceURI + '/serial.txt').then(res => res.text());
@@ -551,14 +549,14 @@ async function kartInit(releases) {
             if (validChecksums[0] !== md5Checksum) {
                 sendNotification('카트플러그', '한글 패치 업데이트가 있습니다.');
                 log('[분석] 패치가 최신 버전이 아닙니다.');
-                version.innerText = '최신 버전이 아닙니다.';
+                version.innerText = kartVersion+' 최신 버전이 아닙니다.';
                 start.innerText = '패치 업데이트';
                 start.addEventListener('click', () => {
                     downloadFile(release.assets[0].browser_download_url, kartPath, 'kart');
                 });
             } else {
                 log('[분석] 최신 버전입니다.');
-                version.innerText = '최신 버전입니다.';
+                version.innerText = kartVersion+' 최신 버전입니다.';
                 start.innerText = '▶ 게임시작';
                 start.addEventListener('click', () => {
                     log('[정보] 게임을 실행합니다.');
@@ -567,7 +565,7 @@ async function kartInit(releases) {
             }
         } else if (unpatchedChecksums.includes(md5Checksum)) {
             log('[분석] 패치되지 않은 버전입니다.');
-            version.innerText = '패치되지 않았습니다.';
+            version.innerText = kartVersion+' 패치되지 않았습니다.';
             start.innerText = '패치 설치';
 
             start.addEventListener('click', () => {
@@ -575,34 +573,24 @@ async function kartInit(releases) {
             });
         } else {
             log('[분석] 한글패치가 제작된 버전이 아닙니다.');
-            version.innerText = '한글패치 적용 불가능 버전입니다.';
+            version.innerText = kartVersion+ '버전은 한글패치가 불가능합니다.';
             start.innerText = '▶ 게임시작';
             start.addEventListener('click', () => {
                 log('[정보] 게임을 실행합니다.');
                 ipcRenderer.send('open-external', "tcgame://kart");
             });
         }
-    } catch (error) {
+    } else {
         loading.style.display = 'none';
-        log(`[오류] ${error.message}`);
         sendNotification('카트플러그', '설치 경로가 올바르게 설정되어 있지 않습니다.');
         log('[정보] 설치 상태는 <strong>Ctrl+R</strong>키로 카트플러그를 재시작하여 확인할 수 있습니다.');
-        try {
-            fs.accessSync(path.join(tcPath, 'TCGame.exe'));
-            version.innerText = '跑跑卡丁车를 설치하세요.';
-            start.innerText = 'TCGAME 실행';
-            start.addEventListener('click', () => {
-                log('[정보] 게임을 실행합니다.');
-                ipcRenderer.send('open-external', "tcgame://kart");
-            });
-        } catch (error) {
-            version.innerText = 'TCGAME으로 설치되어 있지 않습니다.';
-            start.innerText = 'TCGAME 설치';
-            start.addEventListener('click', () => {
-                ipcRenderer.send('alert', 'TCGAME 설치', '브라우저에서 열리는 페이지에서 游戏下载을 눌러 TCGAME 런처를 설치해주세요.');
-                ipcRenderer.send('open-external', "https://popkart.tiancity.com/homepage/v3/");
-            });
-        }
+
+        version.innerText = 'TCGAME으로 설치되어 있지 않습니다.';
+        start.innerText = 'TCGAME 설치';
+        start.addEventListener('click', () => {
+            ipcRenderer.send('alert', 'TCGAME 설치', '브라우저에서 열리는 페이지에서 游戏下载을 눌러 TCGAME 런처를 설치해주세요.');
+            ipcRenderer.send('open-external', "https://popkart.tiancity.com/homepage/v3/");
+        });
     }
     loading.style.display = 'none';
 }
