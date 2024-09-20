@@ -34,7 +34,7 @@ const createWindow = () => {
   client.on('ready', () => {
     console.log('Discord RPC connected!');
     client.setActivity({
-      details: 'by H2O Studio',
+      details: 'by H2Ostudio',
       largeImageKey: 'icon',
       largeImageText: '카트플러그',
       startTimestamp: new Date(),

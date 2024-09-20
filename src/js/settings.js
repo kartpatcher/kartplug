@@ -1,31 +1,10 @@
 const settingsBtn = document.getElementById('setting');
 const settingFile = fs.readFileSync(path.join(__dirname, 'setting.html'), 'utf8');
-const configPath = path.join(process.cwd(), '..', 'config.json');
+const configPath = path.join(process.cwd(), '..', '..', 'configKP.json');
 
 const regKey = new Registry({
     hive: Registry.HKCU,
     key: '\\Software\\TCGame\\kart'
-});
-
-const kdRegKey = new Registry({
-    hive: Registry.HKLMSOFTWARE,
-    key: '\\WOW6432Node\\Nexon\\KartDrift'
-});
-
-kdRegKey.values((err, items) => {
-    if (err) {
-        console.error(err);
-        return;
-    }
-    
-    items.forEach(item => {
-        if (item.name === 'IconDestPath2') {
-            kartDriftPath = item.value;
-        }
-        kdRegSuccess = true;
-    });
-
-    console.log('Game Path:', kartDriftPath);
 });
 
 regKey.values((err, items) => {
