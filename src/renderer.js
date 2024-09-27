@@ -67,10 +67,10 @@ let jamminTestCount = 0;
 let userTrustLevel = 0;
 
 let downloadInProgress = false;
-let sourceURI = "https://h2ostudio.vercel.app/static";
+let sourceURI = "https://kartpatcher.github.io";
 let githubKPURI = "https://api.github.com/repos/kartpatcher/kartplug/releases";
 let githubURI = "https://api.github.com/repos/kartpatcher/kartpatcher.github.io/releases";
-let appVersion = "2.1.1";
+let appVersion = "2.1.1.1";
 
 function sendNotification(title, body) {
     ipcRenderer.send('push-notification', title, body);
