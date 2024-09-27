@@ -70,7 +70,7 @@ let downloadInProgress = false;
 let sourceURI = "https://kartpatcher.github.io";
 let githubKPURI = "https://api.github.com/repos/kartpatcher/kartplug/releases";
 let githubURI = "https://api.github.com/repos/kartpatcher/kartpatcher.github.io/releases";
-let appVersion = "2.1.1.1";
+let appVersion = "2.1.1.2";
 
 function sendNotification(title, body) {
     ipcRenderer.send('push-notification', title, body);
@@ -193,9 +193,9 @@ window.onload = async () => {
             }
         }
 
-        if (releasesKP && releasesKP.name !== 'v' + appVersion) {
-            sendNotification('카트플러그', '버전 '+releasesKP.name+' 업데이트가 있습니다.');
-            await downloadFile(releasesKP.assets[0].browser_download_url, process.cwd(), 'kartplug');
+        if (releasesKP[releasesKP.length - 1] && releasesKP[0].name !== 'v' + appVersion) {
+            sendNotification('카트플러그', '버전 '+releasesKP[0].name+' 업데이트가 있습니다.');
+            await downloadFile(releasesKP[releasesKP.length - 1].assets[0].browser_download_url, process.cwd(), 'kartplug');
         }
 
         if (!jamminTestComplete){
