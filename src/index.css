@@ -109,10 +109,12 @@ input, button, textarea, .appLog, :focus {
   color: #fff;
   padding: 12px 30px;
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0) 100%);
+  align-items: center;
 }
 .plugIcons{
   display: flex;
   gap: 15px;
+  align-items: center;
 }
 .plugIcons img{
   filter: invert(1);
@@ -121,6 +123,20 @@ input, button, textarea, .appLog, :focus {
 }
 .plugIcons img:hover{
   filter: invert(0.8);
+}
+.plugTopBtn{
+  border-radius: 10px;
+  border: none;
+  color: #fff;
+  font-family: 'Noto Sans KR';
+  background: linear-gradient(90deg, rgba(236,72,153,1) 0%, rgba(245,158,11,1) 100%);
+  font-weight: 600;
+  padding: 5px 7px;
+  transition: 0.2s;
+  cursor: pointer;
+}
+.plugTopBtn:hover{
+  filter: brightness(0.9);
 }
 .plugHeader img{
   height: 16px;
@@ -520,8 +536,7 @@ input[type='checkbox']:checked+label{
 }
 
 #oobe{
-  background-image: url('img/20221222_페이스리프트-테마-로딩페이지_1600x900.png');
-  background-color: transparent;
+  background: linear-gradient(251deg, #A78BFA 0%, #60A5FA 100%);
   opacity: 0;
 }
 
@@ -556,4 +571,81 @@ input[type='checkbox']:checked+label{
 }
 .hipass{
   display: none;
+}
+.testWrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: calc(100% - 20px);
+}
+
+/* Material Loading */
+
+#spinner {
+  box-sizing: border-box;
+  stroke: #fff;
+  stroke-width: 3px;
+  -webkit-transform-origin: 50%;
+  transform-origin: 50%;
+  -webkit-animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
+  animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
+}
+
+@-webkit-keyframes rotate {
+  from {
+    -webkit-transform: rotate(0);
+    transform: rotate(0);
+  }
+  to {
+    -webkit-transform: rotate(450deg);
+    transform: rotate(450deg);
+  }
+}
+
+@keyframes rotate {
+  from {
+    -webkit-transform: rotate(0);
+    transform: rotate(0);
+  }
+  to {
+    -webkit-transform: rotate(450deg);
+    transform: rotate(450deg);
+  }
+}
+
+@-webkit-keyframes line {
+  0% {
+    stroke-dasharray: 2, 85.964;
+    -webkit-transform: rotate(0);
+    transform: rotate(0);
+  }
+  50% {
+    stroke-dasharray: 65.973, 21.9911;
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dasharray: 2, 85.964;
+    stroke-dashoffset: -65.973;
+    -webkit-transform: rotate(90deg);
+    transform: rotate(90deg);
+  }
+}
+
+@keyframes line {
+  0% {
+    stroke-dasharray: 2, 85.964;
+    -webkit-transform: rotate(0);
+    transform: rotate(0);
+  }
+  50% {
+    stroke-dasharray: 65.973, 21.9911;
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dasharray: 2, 85.964;
+    stroke-dashoffset: -65.973;
+    -webkit-transform: rotate(90deg);
+    transform: rotate(90deg);
+  }
 }

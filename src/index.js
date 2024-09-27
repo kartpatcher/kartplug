@@ -1,10 +1,12 @@
-const { app, BrowserWindow, ipcMain, dialog, Notification } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, Notification, globalShortcut, clipboard } = require('electron');
 const path = require('node:path');
-const rpc = require('discord-rpc');
 
+const sendkeys = require('sendkeys');
+const rpc = require('discord-rpc');
 const clientId = '1279802287757201451';
 rpc.register(clientId);
 const client = new rpc.Client({ transport: 'ipc' });
+var isChatOpen = false;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -40,6 +42,11 @@ const createWindow = () => {
       startTimestamp: new Date(),
       instance: false,
     });
+  });
+
+  ipcMain.on('converted', (event, text) => {
+    console.log(text);
+    clipboard.writeText(text);
   });
 
   ipcMain.on('minimize-window', () => {
@@ -127,6 +134,51 @@ const createWindow = () => {
   });
 };
 
+const createChatWindow = () => {
+  //check if any process including 'KartRider' is running
+  const { exec } = require('child_process');
+  exec('tasklist', (err, stdout, stderr) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    if (stdout.includes('KartRider')) {
+      console.log('KartRider is running');
+    } else {
+      console.log('KartRider is not running');
+      return;
+    }
+  });
+
+  BrowserWindow.getAllWindows().forEach((window) => {
+    if (window.getTitle() === '카트플러그 채팅') {
+      window.close();
+      return;
+    }
+  });
+
+  const chatWindow = new BrowserWindow({
+    width: 400,
+    height: 93,
+    title: '카트플러그 채팅',
+    frame: false,
+    transparent: true,
+    resizable: false,
+    icon: path.join(__dirname, 'icon.png'),
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+      preload: path.join(__dirname, 'preload.js'),
+    },
+  });
+
+  chatWindow.loadFile(path.join(__dirname, 'converter.html'));
+
+  const { screen } = require('electron');
+  const { x, y } = screen.getCursorScreenPoint();
+  chatWindow.setPosition(x, y);
+};
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -141,7 +193,10 @@ app.whenReady().then(() => {
     }
   });
 
-
+  globalShortcut.register('CommandOrControl+D', () => {
+    createChatWindow();
+    console.log('Chat Hotkey Pressed');
+  })
 
 });
 

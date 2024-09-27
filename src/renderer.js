@@ -37,11 +37,16 @@ const loadingText = document.getElementById('loadingText');
 // Community Links
 const youtube = document.getElementById('youtube');
 const discord = document.getElementById('discord');
+const otpBtn = document.getElementById('otp');
+const helpBtn = document.getElementById('question');
+const batteryBtn = document.getElementById('battery');
 
 // Games
 const easteregg = document.getElementById('easteregg');
 const kart = document.getElementById('kart');
 const jlgolf = document.getElementById('jlgolf');
+const kartdrift = document.getElementById('kartdrift');
+const jlgolf2 = document.getElementById('jlgolf2');
 
 const notification = new Audio('sound/message01.mp3');
 const jamminTest = new Audio('sound/jamminTest.mp3');
@@ -58,14 +63,18 @@ let kartDriftPath = "C:\\Program Files (x86)\\TCGAME\\TCGameApps\\kartdrift";
 let jamminTestComplete = false;
 let jamminTestTimeStamp = 0;
 let jamminTestCount = 0;
+
+let userTrustLevel = 0;
+
 let downloadInProgress = false;
-let sourceURI = "https://kartpatcher.github.io";
+let sourceURI = "https://h2ostudio.vercel.app/static";
+let githubKPURI = "https://api.github.com/repos/kartpatcher/kartplug/releases";
 let githubURI = "https://api.github.com/repos/kartpatcher/kartpatcher.github.io/releases";
-let appVersion = "2.0.3";
+let appVersion = "2.1.1";
 
 function sendNotification(title, body) {
     ipcRenderer.send('push-notification', title, body);
-    notification.play();
+    //notification.play();
 }
 
 function calculateMD5(filePath) {
@@ -104,6 +113,14 @@ window.onload = async () => {
         ipcRenderer.send('open-external', 'https://discord.com/invite/FjA2EqHKBB');
     });
 
+    helpBtn.addEventListener('click', () => {
+        ipcRenderer.send('open-external', 'https://h2ostudio.vercel.app/docs');
+    });
+
+    batteryBtn.addEventListener('click', () => {
+        ipcRenderer.send('open-external', 'https://h2ostudio.vercel.app/docs/battery');
+    });
+
     noticeClose.addEventListener('click', () => {
         notice.style.display = 'none';
     });
@@ -124,8 +141,14 @@ window.onload = async () => {
             }
         }).then(res => res.json());
 
+        const releasesKP = await fetch(githubKPURI, {
+            headers: {
+                'Accept': 'application/vnd.github.v3+json',
+                'X-GitHub-Api-Version': '2022-11-28'
+            }
+        }).then(res => res.json());
+
         const popupNotice = await fetch(sourceURI + '/notice.json').then(res => res.json());
-        const kartplugUpdate = releases.find(release => release.tag_name === 'kartplug');
 
         async function loadNotice(url) {
             const contUrl = await fetch(url).then(res => res.text());
@@ -170,18 +193,10 @@ window.onload = async () => {
             }
         }
 
-        if (kartplugUpdate && kartplugUpdate.name !== 'kartplug-v' + appVersion) {
-            const changelog = await fetch(sourceURI + '/changelog.txt').then(res => res.text());
-            log(`[업데이트] 카트플러그 ${kartplugUpdate.name} 업데이트가 있습니다.`);
-            sendNotification('카트플러그', '버전 '+kartplugUpdate.name.replace('kartplug-v', '')+' 업데이트가 있습니다.');
-            await downloadFile(kartplugUpdate.assets[0].browser_download_url, process.cwd(), 'kartplug');
-            //ipcRenderer.send('alert', '업데이트', '브라우저에서 열리는 페이지에서 카트플러그 업데이트를 다운로드해주세요.\n\n<서비스 변경사항>\n' + changelog);
-            //ipcRenderer.send('open-external', kartplugUpdate.assets[0].browser_download_url);
-            //ipcRenderer.send('close-window');
+        if (releasesKP && releasesKP.name !== 'v' + appVersion) {
+            sendNotification('카트플러그', '버전 '+releasesKP.name+' 업데이트가 있습니다.');
+            await downloadFile(releasesKP.assets[0].browser_download_url, process.cwd(), 'kartplug');
         }
-
-
-
 
         if (!jamminTestComplete){
             jamminTestInit();
@@ -205,6 +220,14 @@ window.onload = async () => {
             loadBanners('jlgolf');
             gameUIInit('jlgolf');
             jlInit(releases);
+        });
+        jlgolf2.addEventListener('click', () => {
+            ipcRenderer.send('alert', '개발이 중단된 게임입니다.', 'JL Golf: Nice Shot은 Life of JL로 리뉴얼 중에 있습니다.\nJL의 여정을 담은 시뮬레이션 게임을 기대해주세요.');
+        });
+        kartdrift.addEventListener('click', () => {
+            loadBanners('kd');
+            gameUIInit('kd');
+            kdInit(releases);
         });
         easteregg.addEventListener('click', () => {
             gameUIInit('gosegu');
@@ -234,21 +257,9 @@ function playSuccessAni(){
 }
 
 function playSuccessAniDownload(){
-    success.play();
-    document.getElementById('successCinema').style.display = 'flex';
-    document.getElementById('successCinema').classList.add('success');
-    document.getElementById('successText').classList.add('successAni');
-    
-    setTimeout(() => {
-        document.getElementById('successText').style.display = 'none';
-        kart.click();
-    
-    }, 5000);
-
-    setTimeout(() => {
-        document.getElementById('successCinema').style.display = 'none';
-        dialogA.play();
-    }, 5000);
+    sendNotification('카트플러그', '패치 파일 설치가 완료되었습니다.');
+    dialogA.play();
+    kart.click();
 }
 
 async function jamminTestInit() {
@@ -256,28 +267,19 @@ async function jamminTestInit() {
     const jtEnglishListening = fs.readFileSync(path.join(__dirname, 'jamminTest/english.html'), 'utf8');
     const questions = fs.readFileSync(path.join(__dirname, 'jamminTest/tests.json'), 'utf8');
 
-    if (Date.now() - jamminTestTimeStamp < 86400000 && jamminTestCount == 2) {
-        sendNotification('카트플러그', '테스트 한도가 초과되었습니다. 내일 시도하세요!');
-        window.close();
-        return;
-    }
-    else if (Date.now() - jamminTestTimeStamp < 86400000){
-        sendNotification('카트플러그', '테스트 '+jamminTestCount+'/2회차입니다. 2회가 초과되면 다음날 다시 시도하세요.');
-    }
-    else{
         jamminTestCount = 0;
         fs.writeFileSync(configPath, JSON.stringify({
             jamminTestComplete,
             jamminTestTimeStamp,
             jamminTestCount
         }));
-    }
+    
 
-    jamminTest.addEventListener('ended', function() {
+    /*jamminTest.addEventListener('ended', function() {
         this.currentTime = 0;
         this.play();
     }, false);
-    jamminTest.play();
+    jamminTest.play();*/
 
     noticeContent.innerHTML = jtFile;
     noticeTitle.innerText = '시작하기';
@@ -293,16 +295,17 @@ async function jamminTestInit() {
     const passTest = document.getElementById('hipass');
 
     passTest.addEventListener('click', () => {
-        jamminTest.pause();
-        playSuccessAni();
+        //jamminTest.pause();
+        //playSuccessAni();
         jamminTestComplete = true;
         fs.writeFileSync(configPath, JSON.stringify({
             jamminTestComplete,
             jamminTestTimeStamp,
             jamminTestCount
         }));
+        location.reload();
     });
-
+/*
     startTest.addEventListener('click', () => {
         let question = JSON.parse(questions);
         let random = Math.floor(Math.random() * question.length);
@@ -365,7 +368,7 @@ async function jamminTestInit() {
                 location.reload();
             }
         });
-    });
+    });*/
 }
 
 async function downloadFile(url, filepath, type) {
@@ -416,7 +419,7 @@ async function downloadFile(url, filepath, type) {
         start.innerText = `다운로드 중... ${percentage}%`;
         }
         else{
-            loadingText.innerHTML = `카트플러그 업데이트가 있습니다.<br><br>다운로드 중... ${percentage}%`;
+            loadingText.innerHTML = `<br>다운로드 중... ${percentage}%`;
         }
 
         await pump();
@@ -432,6 +435,7 @@ async function downloadFile(url, filepath, type) {
 
     if (type == 'kart') {
     // 압축 해제
+    start.innerText = `설치 중...`;
     log('[압축 해제] 패치 파일을 압축 해제합니다.');
     await new Promise((resolve, reject) => {
         fs.createReadStream(zipFilePath)
@@ -478,6 +482,10 @@ function gameUIInit(game) {
         gameTitle.innerText = '세구라이드';
         chatArea.style.opacity = '0';
         document.body.style.backgroundColor = '#1F6A83';
+    } else if (game == 'kd'){
+        gameTitle.innerText = '카트라이더: 드리프트';
+        chatArea.style.opacity = '0';
+        document.body.style.backgroundColor = '#1F6A83';
     }
     logger.innerHTML = '';
     mainContent.style.backgroundImage = 'url("games/' + game + '/defaultbg.png")';
@@ -489,6 +497,21 @@ function gameUIInit(game) {
 
     start = document.getElementById('start');
     start.classList.remove('download');
+}
+
+async function kdInit(releases) {
+    if (downloadInProgress) {  
+        return;
+    }
+    
+    loading.style.display = 'none';
+    start.innerText = '▶ 어떻게 패치되나요?';
+    version.innerText = '출시 예정';
+    start.addEventListener('click', () => {
+        noticeContent.innerHTML = '배경음악, 서체 등 게임 내 리소스를 한글화합니다.<br>';
+        noticeTitle.innerText = '패치 로드맵';
+        notice.style.display = 'flex';
+    });
 }
 
 async function jlInit(releases) {
@@ -533,7 +556,7 @@ async function kartInit(releases) {
         const unpatchedChecksums = await fetchChecksums(sourceURI + '/stock.txt');
         //const serialNumber = await fetch(sourceURI + '/serial.txt').then(res => res.text());
 
-        const release = releases.find(release => release.name === validChecksums[0] && release.tag_name === 'patch');
+        const release = releases.find(release => release.name === validChecksums[0]);
 
         //const filePath = path.join(kartPath, 'Data', 'gui_font.rho');
         const aaafilePath = path.join(kartPath, 'Data', 'aaa.pk');
@@ -547,6 +570,7 @@ async function kartInit(releases) {
 
         if (validChecksums.includes(md5Checksum)) {
             if (validChecksums[0] !== md5Checksum) {
+                userTrustLevel = 1;
                 sendNotification('카트플러그', '한글 패치 업데이트가 있습니다.');
                 log('[분석] 패치가 최신 버전이 아닙니다.');
                 version.innerText = kartVersion+' 최신 버전이 아닙니다.';
@@ -555,6 +579,7 @@ async function kartInit(releases) {
                     downloadFile(release.assets[0].browser_download_url, kartPath, 'kart');
                 });
             } else {
+                userTrustLevel = 1;
                 log('[분석] 최신 버전입니다.');
                 version.innerText = kartVersion+' 최신 버전입니다.';
                 start.innerText = '▶ 게임시작';
@@ -564,6 +589,7 @@ async function kartInit(releases) {
                 });
             }
         } else if (unpatchedChecksums.includes(md5Checksum)) {
+            userTrustLevel = 0;
             log('[분석] 패치되지 않은 버전입니다.');
             version.innerText = kartVersion+' 패치되지 않았습니다.';
             start.innerText = '패치 설치';
@@ -572,6 +598,7 @@ async function kartInit(releases) {
                 downloadFile(release.assets[0].browser_download_url, kartPath, 'kart');
             });
         } else {
+            userTrustLevel = 1;
             log('[분석] 한글패치가 제작된 버전이 아닙니다.');
             version.innerText = kartVersion+ '버전은 한글패치가 불가능합니다.';
             start.innerText = '▶ 게임시작';
@@ -581,6 +608,7 @@ async function kartInit(releases) {
             });
         }
     } else {
+        userTrustLevel = 0;
         loading.style.display = 'none';
         sendNotification('카트플러그', '설치 경로가 올바르게 설정되어 있지 않습니다.');
         log('[정보] 설치 상태는 <strong>Ctrl+R</strong>키로 카트플러그를 재시작하여 확인할 수 있습니다.');

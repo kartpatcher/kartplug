@@ -7,6 +7,7 @@
     <script defer src="renderer.js"></script>
     <script defer src="js/chatConv.js"></script>
     <script defer src="js/settings.js"></script>
+    <script defer src="js/otp.js"></script>
   </head>
   <body>
     <!-- System Bar -->
@@ -23,9 +24,16 @@
 
 
      <div class="dimmer" id="loading" style="background-color: #191a1c; flex-direction: column;">
-      <div class="loading"></div>
-      <div class="loadingText" id="loadingText">카트플러그 실행 중...</div>
-      <footer class="footer">© H2Ostudio All Rights Reserved.​</footer>
+      <svg viewBox="0 0 32 32" width="42" height="42">
+          <circle id="spinner" cx="16" cy="16" r="14" fill="none"></circle>
+        </svg>
+        
+      <div class="loadingText" id="loadingText">
+      </div>
+
+      <footer class="footer">
+        <img src="img/Grayscale.svg" alt="H2Ostudio" style="height: 18px;filter: brightness(0.4);" />
+      </footer>
     </div>
 
     <div class="dimmer" id="oobe" style="display: none;">
@@ -54,7 +62,10 @@
               <div class="plugIcons">
                 <img src="img/youtube.svg" class="plugIcon" id="youtube"/>
                 <img src="img/discord.svg" class="plugIcon" id="discord"/>
-                <!--<img src="img/question.svg" class="plugIcon" id="question"/>-->
+                <img src="img/otp.svg" class="plugIcon" id="otp"/>
+                
+                <img src="img/question.svg" class="plugIcon" id="question"/>
+                <button class="plugTopBtn" id="battery">건전지 충전</button>
               </div>
           </div>
           <div class="gameContent">
@@ -85,7 +96,9 @@
   <div class="gameList">
     <span id="easteregg">게임 목록</span>
     <img src="games/kart/icon.png" id="kart"/>
-    <img src="games/jlgolf/icon.png" id="jlgolf"/>
+    <img src="games/kd/icon.jpg" id="kartdrift"/>
+    <img src="games/jlgolf/icon.png" id="jlgolf2"/>
+    <img src="games/jlgolf/icon.png" id="jlgolf" style="display: none;"/>
   </div>
 </div>
   </body>

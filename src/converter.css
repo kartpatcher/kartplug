@@ -1,0 +1,51 @@
+@font-face {
+    font-family:  'Noto Sans KR';
+    src: url('font/PretendardVariable.ttf') format('opentype');
+  }
+  @font-face{
+    font-family: 'Spoqa Han Sans Neo';
+    src: url('font/SpoqaHanSansNeo-Regular.otf') format('opentype');
+  }
+  @font-face {
+    font-family:  'Nexon Lv1 Gothic OTF';
+    src: url('font/NEXONLv1GothicBold.ttf') format('opentype');
+  }
+
+  body{
+    margin: 0;
+    font-family: 'Noto Sans KR', sans-serif!important;
+    border: 1px solid black;
+    height: 100%;
+    background-color: #fff;
+  }
+  :not(input):not(textarea),
+  :not(input):not(textarea)::after,
+  :not(input):not(textarea)::before {
+      -webkit-user-select: none;
+      user-select: none;
+  }
+  .titBar{
+    background: linear-gradient(180deg, #4073B7 0%, #4073B7 3%, #225CAA 3%, #225CAA 6%, #104FA3 6%, #0F3F8C 97%, #0C3879 97%, #0C3879 100%);
+    height: 33px;
+    color: white;
+    font-size: 20px;
+    padding-top: 6.5px;
+    text-align: center;
+  }
+  .content{
+    padding: 10px;
+  }
+
+  #input{
+    border-radius: 0;
+    border: 1px solid #878D99;
+    width: 100%;
+    font-size: 16px;
+    box-sizing: border-box;
+    font-family: 'Noto Sans KR', sans-serif!important;
+    padding: 5px;
+  }
+
+  #input:focus{
+    outline: none;
+  }

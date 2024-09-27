@@ -1,4 +1,4 @@
-const settingsBtn = document.getElementById('setting');
+//const settingsBtn = document.getElementById('setting');
 const settingFile = fs.readFileSync(path.join(__dirname, 'setting.html'), 'utf8');
 const configPath = path.join(process.cwd(), '..', '..', 'configKP.json');
 
@@ -49,12 +49,12 @@ else {
     }
 }
 
-settingsBtn.addEventListener('click', () => {
+/*settingsBtn.addEventListener('click', () => {
     noticeContent.innerHTML = settingFile;
     noticeTitle.innerText = '설정 ('+appVersion+')';
     notice.style.display = 'flex';
 
-    /*const searchKart = document.getElementById('searchKart');
+    const searchKart = document.getElementById('searchKart');
     const searchTc = document.getElementById('searchTc');
     const saveBtn = document.getElementById('saveBtn');
     const resetBtn = document.getElementById('resetBtn');
@@ -107,5 +107,5 @@ settingsBtn.addEventListener('click', () => {
             jamminTestCount
         }));
         window.location.reload();
-    });*/
-});
+    });
+});*/
